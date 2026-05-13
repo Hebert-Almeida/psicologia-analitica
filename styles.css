@@ -1,0 +1,897 @@
+@import url(https://fonts.googleapis.com/css2?family-Poppins:wght@100;200;300;400;500;600;800;900&display-swap);
+
+:root {
+    --bg-deep: #3b073b;
+    --bg-deeper: #2a0529;
+    --accent: #f3f3f3;
+    --accent-soft: rgba(243, 243, 243, 0.14);
+    --paper: #f7f7f7;
+    --ink: #1f1421;
+    --ink-soft: #2a2a2a;
+    --line: rgba(243, 243, 243, 0.18);
+    --surface: rgba(15, 0, 15, 0.72);
+    --surface-strong: rgba(15, 0, 15, 0.85);
+    --surface-soft: rgba(20, 5, 25, 0.55);
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    min-width: 100dvw;
+    min-height: 100dvh;
+    scrollbar-width: none;
+    font-size: clamp(0.875rem, 0.75rem + 0.4vw, 1rem);
+    line-height: 1.6;
+    color: #f3f3f3;
+}
+
+body::-webkit-scrollbar { display: none; }
+.concept-page::-webkit-scrollbar { display: none; }
+
+main,
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    width: 100%;
+}
+
+main {
+    flex-direction: column;
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-deep);
+    z-index: 0;
+    pointer-events: auto;
+}
+
+#particles-js { z-index: 0; }
+
+.container,
+.map-stage,
+.concept-page,
+.concept-page__hero,
+.concept-page__body,
+.concept-page__connections,
+.connections__header,
+.connections__list,
+.concept-page__divider,
+.concept-page__text { pointer-events: none; }
+
+.title,
+#intro--btns,
+#intro--btns > button,
+.map-controls,
+.map-control-btn,
+.concept-panel,
+.map-hint,
+#mindmap,
+.connection-card,
+.concept-page__back,
+.concept-page__title,
+.concept-page__blurb,
+.concept-page__lead,
+.concept-page__text p,
+.concept-page__eyebrow,
+.connections__eyebrow,
+.connections__title,
+.connections__hint,
+.concept-page__bibliography,
+.bibliography__item { pointer-events: auto; }
+
+.hidden { display: none !important; }
+
+/* ---------------------------- Intro ---------------------------- */
+
+.title {
+    height: 400px;
+    width: 600px;
+    background-color: var(--paper);
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 64px;
+    gap: 20px;
+    box-shadow:
+        rgba(0, 0, 0, 0.25) 0px 54px 55px,
+        rgba(0, 0, 0, 0.12) 0px -12px 30px,
+        rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px,
+        rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    text-align: center;
+    transition: 200ms all ease-in-out;
+}
+
+.title:hover { border-radius: 40px; }
+
+.title h1 {
+    font-size: clamp(1.5rem, 1rem + 2.5vw, 2.5rem);
+    line-height: 1.2;
+    color: #333;
+}
+
+.title p {
+    font-size: clamp(0.9375rem, 0.85rem + 0.4vw, 1.0625rem);
+    color: #333;
+}
+
+#intro--btns > button {
+    background-color: var(--bg-deep);
+    border: none;
+    width: 200px;
+    height: 50px;
+    color: var(--paper);
+    font-size: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
+    cursor: pointer;
+    border-radius: 12px;
+    transition: 200ms all ease-in-out;
+}
+
+.wobble-hor-bottom:hover {
+    -webkit-animation: wobble-hor-bottom 0.8s both;
+    animation: wobble-hor-bottom 0.8s both;
+}
+
+@keyframes wobble-hor-bottom {
+    0%, 100% { transform: translateX(0%); transform-origin: 50% 50%; }
+    15%      { transform: translateX(-30px) rotate(-6deg); }
+    30%      { transform: translateX(15px) rotate(6deg); }
+    45%      { transform: translateX(-15px) rotate(-3.6deg); }
+    60%      { transform: translateX(9px) rotate(2.4deg); }
+    75%      { transform: translateX(-6px) rotate(-1.2deg); }
+}
+
+/* ---------------------- Mapa mental (D3) ---------------------- */
+
+#map--container {
+    padding: 0;
+    min-height: 100dvh;
+    height: 100dvh;
+}
+
+.map-stage {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    z-index: 5;
+}
+
+#mindmap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+#mindmap:active { cursor: grabbing; }
+
+.self-halo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(85vmin, 1100px);
+    height: min(85vmin, 1100px);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle at center,
+            rgba(243, 243, 243, 0.06) 0%,
+            rgba(243, 243, 243, 0.03) 55%,
+            rgba(243, 243, 243, 0) 72%);
+    border: 1px dashed rgba(243, 243, 243, 0.18);
+    box-shadow: inset 0 0 120px rgba(243, 243, 243, 0.05);
+    pointer-events: none;
+    z-index: 1;
+    animation: self-pulse 8s ease-in-out infinite;
+}
+
+.self-halo::before {
+    content: '';
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    border: 1px dashed rgba(243, 243, 243, 0.08);
+    pointer-events: none;
+}
+
+.self-halo__label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(6rem, 18vmin, 14rem);
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: rgba(243, 243, 243, 0.06);
+    text-transform: uppercase;
+    user-select: none;
+    pointer-events: none;
+    line-height: 1;
+}
+
+@keyframes self-pulse {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 1; }
+}
+
+.mindmap-link {
+    stroke: var(--line);
+    stroke-width: 1.2;
+    transition: stroke 200ms ease, stroke-width 200ms ease, opacity 200ms ease;
+}
+
+.mindmap-link.is-active {
+    stroke: var(--accent);
+    stroke-width: 2.4;
+    opacity: 1;
+}
+
+.mindmap-link.is-dim { opacity: 0.12; }
+
+.mindmap-node {
+    cursor: pointer;
+    transition: opacity 200ms ease;
+}
+
+.mindmap-node:focus { outline: none; }
+
+.mindmap-node__circle {
+    fill: #f3f3f3;
+    stroke: var(--bg-deep);
+    stroke-width: 3;
+    transition: r 200ms ease, fill 200ms ease, stroke 200ms ease, filter 200ms ease;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
+}
+
+.mindmap-node:hover .mindmap-node__circle,
+.mindmap-node:focus .mindmap-node__circle {
+    fill: var(--accent);
+    r: 30;
+}
+
+.mindmap-node.is-active .mindmap-node__circle {
+    fill: var(--accent);
+    stroke: #f3f3f3;
+    stroke-width: 4;
+    r: 34;
+    filter: drop-shadow(0 0 18px rgba(243, 243, 243, 0.55));
+}
+
+.mindmap-node.is-neighbour .mindmap-node__circle {
+    fill: #f3f3f3;
+    stroke: var(--accent);
+    stroke-width: 3;
+}
+
+.mindmap-node.is-dim { opacity: 0.35; }
+
+.mindmap-node__label {
+    fill: #f3f3f3;
+    font-size: 14px;
+    font-weight: 600;
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: rgba(59, 7, 59, 0.85);
+    stroke-width: 4;
+    stroke-linejoin: round;
+}
+
+/* Controles de zoom */
+.map-controls {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+}
+
+.map-control-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(243, 243, 243, 0.35);
+    background: rgba(59, 7, 59, 0.7);
+    color: #f3f3f3;
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: background 200ms ease, transform 150ms ease, border-color 200ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-control-btn:hover,
+.map-control-btn:focus-visible {
+    background: rgba(90, 14, 90, 0.85);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+/* Dica */
+.map-hint {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #f3f3f3;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(243, 243, 243, 0.15);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: clamp(0.85rem, 0.75rem + 0.3vw, 0.95rem);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+    transition: opacity 300ms ease;
+    z-index: 10;
+    max-width: min(90vw, 640px);
+    text-align: center;
+}
+
+.map-hint.is-faded { opacity: 0; }
+
+.map-hint strong {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* Painel lateral do mapa */
+.concept-panel {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    width: min(360px, 92vw);
+    max-height: calc(100dvh - 48px);
+    background: rgba(15, 0, 15, 0.85);
+    color: #f3f3f3;
+    border: 1px solid rgba(243, 243, 243, 0.18);
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    z-index: 12;
+    scrollbar-width: none;
+    animation: panel-in 220ms ease-out;
+}
+
+.concept-panel::-webkit-scrollbar { display: none; }
+
+@keyframes panel-in {
+    from { opacity: 0; transform: translate(20px, -50%); }
+    to   { opacity: 1; transform: translate(0, -50%); }
+}
+
+.concept-panel__close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #f3f3f3;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 150ms ease;
+}
+
+.concept-panel__close:hover { background: rgba(243, 243, 243, 0.1); }
+
+.concept-panel__eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 6px;
+}
+
+.concept-panel__title {
+    font-size: clamp(1.5rem, 1rem + 1.5vw, 2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 12px;
+}
+
+.concept-panel__blurb {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: rgba(243, 243, 243, 0.85);
+    margin-bottom: 18px;
+}
+
+.concept-panel__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.concept-chip {
+    background: rgba(243, 243, 243, 0.08);
+    color: #f3f3f3;
+    border: 1px solid rgba(243, 243, 243, 0.2);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.825rem;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.concept-chip:hover,
+.concept-chip:focus-visible {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    outline: none;
+}
+
+.concept-panel__open {
+    width: 100%;
+    background: var(--accent);
+    color: var(--bg-deep);
+    border: none;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 150ms ease, transform 150ms ease;
+}
+
+.concept-panel__open:hover,
+.concept-panel__open:focus-visible {
+    background: #ffffff;
+    transform: translateY(-1px);
+    outline: none;
+}
+
+/* ------------------------ Concept View ------------------------ */
+
+#concept-view {
+    align-items: flex-start;
+    padding: 64px 24px 96px;
+    min-height: 100dvh;
+    position: relative;
+    z-index: 9;
+}
+
+.concept-page {
+    width: min(960px, 100%);
+    margin: 0 auto;
+    color: #f3f3f3;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+}
+
+/* ---- Hero ---- */
+
+.concept-page__hero {
+    position: relative;
+    padding: 32px 36px 40px;
+    border-radius: 28px;
+    background: var(--surface);
+    border: 1px solid rgba(243, 243, 243, 0.14);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
+}
+
+.concept-page__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(243, 243, 243, 0.08);
+    color: #f3f3f3;
+    border: 1px solid rgba(243, 243, 243, 0.18);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+    margin-bottom: 28px;
+}
+
+.concept-page__back:hover,
+.concept-page__back:focus-visible {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateX(-2px);
+    outline: none;
+}
+
+.concept-page__eyebrow {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+.concept-page__title {
+    font-size: clamp(2.25rem, 1.4rem + 4vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: #f8f8f8;
+    margin-bottom: 10px;
+    padding-bottom: 0.05em;
+}
+
+.concept-page__title-inner {
+    display: inline-block;
+    color: #f8f8f8;
+}
+
+.concept-page__title-word {
+    display: inline-flex;
+    white-space: nowrap;
+}
+
+.concept-page__title-char {
+    display: inline-block;
+    will-change: transform, opacity;
+}
+
+.concept-page__title-underline {
+    display: block;
+    width: 0;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(243, 243, 243, 0.05), rgba(243, 243, 243, 0.85), rgba(243, 243, 243, 0.05));
+    margin: 0 0 22px;
+    will-change: width, opacity;
+}
+
+.concept-page__blurb {
+    font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+    line-height: 1.5;
+    color: rgba(243, 243, 243, 0.85);
+    max-width: 70ch;
+}
+
+.concept-page__divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 28px;
+    opacity: 0.7;
+}
+
+.concept-page__divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(243, 243, 243, 0.4), transparent);
+}
+
+.concept-page__divider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(243, 243, 243, 0.45);
+}
+
+/* ---- Body / texto ---- */
+
+.concept-page__body {
+    padding: 32px 36px;
+    border-radius: 24px;
+    background: var(--surface-soft);
+    border: 1px solid rgba(243, 243, 243, 0.08);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.concept-page__lead {
+    font-size: clamp(1.1rem, 0.95rem + 0.7vw, 1.35rem);
+    font-weight: 500;
+    line-height: 1.5;
+    color: #f3f3f3;
+    margin-bottom: 24px;
+    border-left: 3px solid var(--accent);
+    padding-left: 18px;
+}
+
+.concept-page__text p {
+    font-size: clamp(0.95rem, 0.88rem + 0.35vw, 1.0625rem);
+    line-height: 1.75;
+    color: rgba(243, 243, 243, 0.88);
+    margin-bottom: 18px;
+}
+
+.concept-page__text p:last-child { margin-bottom: 0; }
+
+/* ---- Connections ---- */
+
+.concept-page__connections {
+    margin-top: 8px;
+}
+
+.connections__header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.connections__eyebrow {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.connections__title {
+    font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.25rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 6px;
+    color: #f8f8f8;
+}
+
+.connections__hint {
+    color: rgba(243, 243, 243, 0.65);
+    font-size: 0.95rem;
+}
+
+.connections__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.connection-card {
+    position: relative;
+    padding: 22px 22px 20px;
+    border-radius: 18px;
+    background: var(--surface);
+    border: 1px solid rgba(243, 243, 243, 0.14);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+    transition: transform 250ms ease, border-color 250ms ease, box-shadow 250ms ease, background 250ms ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    will-change: transform, opacity, filter;
+}
+
+.connection-card__shine {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(120px 120px at var(--mx, 50%) var(--my, 0%), rgba(243, 243, 243, 0.10), rgba(243, 243, 243, 0) 70%);
+    opacity: 0;
+    transition: opacity 220ms ease;
+}
+
+.connection-card:hover .connection-card__shine,
+.connection-card:focus-within .connection-card__shine {
+    opacity: 1;
+}
+
+.connection-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    opacity: 0.55;
+    transition: opacity 200ms ease;
+}
+
+.connection-card:hover,
+.connection-card:focus-within {
+    transform: translateY(-4px);
+    border-color: rgba(243, 243, 243, 0.45);
+    background: var(--surface-strong);
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.55);
+}
+
+.connection-card:hover::before,
+.connection-card:focus-within::before { opacity: 1; }
+
+.connection-card__relation {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.connection-card__name {
+    font-size: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: #f8f8f8;
+}
+
+.connection-card__blurb {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: rgba(243, 243, 243, 0.75);
+    flex: 1;
+}
+
+.connection-card__go {
+    margin-top: 10px;
+    align-self: flex-start;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid rgba(243, 243, 243, 0.35);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.connection-card__go:hover,
+.connection-card__go:focus-visible {
+    background: var(--accent);
+    color: var(--bg-deep);
+    transform: translateX(2px);
+    outline: none;
+}
+
+/* ---- Bibliography ---- */
+
+.concept-page__bibliography {
+    margin-top: 8px;
+    padding: 32px 36px;
+    border-radius: 24px;
+    background: var(--surface-soft);
+    border: 1px solid rgba(243, 243, 243, 0.08);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.bibliography__header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.bibliography__eyebrow {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+    margin-bottom: 6px;
+}
+
+.bibliography__title {
+    font-size: clamp(1.35rem, 1rem + 1.4vw, 1.85rem);
+    font-weight: 800;
+    line-height: 1.2;
+    color: #f8f8f8;
+}
+
+.bibliography__list {
+    list-style: none;
+    counter-reset: bib;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.bibliography__item {
+    counter-increment: bib;
+    position: relative;
+    padding: 14px 18px 14px 52px;
+    border-radius: 12px;
+    background: rgba(243, 243, 243, 0.04);
+    border: 1px solid rgba(243, 243, 243, 0.08);
+    font-size: clamp(0.875rem, 0.82rem + 0.25vw, 0.95rem);
+    line-height: 1.55;
+    color: rgba(243, 243, 243, 0.85);
+    text-indent: 0;
+    transition: background 200ms ease, border-color 200ms ease;
+}
+
+.bibliography__item::before {
+    content: counter(bib, decimal-leading-zero);
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+}
+
+.bibliography__item:hover {
+    background: rgba(243, 243, 243, 0.07);
+    border-color: rgba(243, 243, 243, 0.18);
+}
+
+.bibliography__item em {
+    color: #f3f3f3;
+    font-style: italic;
+}
+
+/* ---------------------------- Responsivo ---------------------------- */
+
+@media (max-width: 720px) {
+    .concept-panel {
+        right: 50%;
+        top: auto;
+        bottom: 16px;
+        transform: translate(50%, 0);
+        max-height: 55dvh;
+    }
+
+    @keyframes panel-in {
+        from { opacity: 0; transform: translate(50%, 20px); }
+        to   { opacity: 1; transform: translate(50%, 0); }
+    }
+
+    .map-controls {
+        bottom: auto;
+        top: 80px;
+        right: 16px;
+    }
+
+    #concept-view {
+        padding: 32px 16px 64px;
+    }
+
+    .concept-page { gap: 40px; }
+
+    .concept-page__hero {
+        padding: 22px 22px 28px;
+        border-radius: 22px;
+    }
+
+    .concept-page__lead { padding-left: 14px; }
+
+    .concept-page__bibliography {
+        padding: 22px 18px;
+        border-radius: 18px;
+    }
+
+    .bibliography__item {
+        padding: 12px 14px 12px 44px;
+    }
+
+    .bibliography__item::before {
+        top: 12px;
+        left: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .self-halo,
+    .mindmap-node__circle,
+    .mindmap-link,
+    .concept-panel,
+    .map-hint,
+    .map-control-btn,
+    .concept-page__title-char,
+    .connection-card {
+        animation: none !important;
+        transition: none !important;
+    }
+}

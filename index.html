@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de conceitos da Psicologia Analítica</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body id="body">
+    <header></header>
+    <main>
+        <!-- Intro -->
+        <div class="container" id="intro--container">
+            <div class="title" id="intro--title">
+                <h1>As conexões da Psicologia Analítica</h1>
+                <p>
+                    Explore os principais conceitos da Psicologia Analítica e descubra as conexões simbólicas, dinâmicas
+                    e estruturais que atravessam a psique humana.
+                </p>
+                <div id="intro--btns">
+                    <button id="start-btn" class="wobble-hor-bottom">Mergulhar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mapa mental (d3) -->
+        <div class="container hidden" id="map--container">
+            <div class="map-stage">
+                <div class="self-halo" aria-hidden="true">
+                    <span class="self-halo__label">Self</span>
+                </div>
+                <svg id="mindmap" role="img" aria-label="Mapa mental dos conceitos da Psicologia Analítica"></svg>
+
+                <div class="map-controls" role="toolbar" aria-label="Controles do mapa">
+                    <button type="button" class="map-control-btn" id="zoom-in-btn" aria-label="Aproximar">+</button>
+                    <button type="button" class="map-control-btn" id="zoom-out-btn" aria-label="Afastar">&minus;</button>
+                    <button type="button" class="map-control-btn" id="zoom-reset-btn" aria-label="Centralizar mapa">&#9678;</button>
+                </div>
+
+                <div class="map-hint" id="map-hint">
+                    Clique em um conceito para ver suas conexões. Tudo aqui habita o <strong>Self</strong>.
+                </div>
+
+                <aside class="concept-panel hidden" id="concept-panel" aria-live="polite">
+                    <button type="button" class="concept-panel__close" id="concept-panel-close" aria-label="Fechar">&times;</button>
+                    <p class="concept-panel__eyebrow">Conceito</p>
+                    <h2 class="concept-panel__title" id="concept-panel-title"></h2>
+                    <p class="concept-panel__blurb" id="concept-panel-blurb"></p>
+                    <div class="concept-panel__links" id="concept-panel-links"></div>
+                    <button type="button" class="concept-panel__open" id="concept-panel-open">Aprofundar neste conceito</button>
+                </aside>
+            </div>
+        </div>
+
+        <!-- Concept View  -->
+        <div class="container hidden" id="concept-view" aria-live="polite">
+            <article class="concept-page" id="concept-page">
+                <header class="concept-page__hero">
+                    <button type="button" class="concept-page__back" id="concept-page-back" aria-label="Voltar ao mapa mental">
+                        <span aria-hidden="true">&larr;</span>
+                        <span>Voltar ao mapa</span>
+                    </button>
+
+                    <p class="concept-page__eyebrow" id="concept-page-eyebrow">Conceito</p>
+
+                    <h1 class="concept-page__title" id="concept-page-title">
+                        <span class="concept-page__title-inner" id="concept-page-title-inner"></span>
+                    </h1>
+                    <span class="concept-page__title-underline" id="concept-page-title-underline" aria-hidden="true"></span>
+
+                    <p class="concept-page__blurb" id="concept-page-blurb"></p>
+
+                    <div class="concept-page__divider" aria-hidden="true">
+                        <span class="concept-page__divider-line"></span>
+                        <span class="concept-page__divider-dot"></span>
+                        <span class="concept-page__divider-line"></span>
+                    </div>
+                </header>
+
+                <section class="concept-page__body" id="concept-page-body" aria-labelledby="concept-page-title">
+                    <p class="concept-page__lead" id="concept-page-lead"></p>
+                    <div class="concept-page__text" id="concept-page-text"></div>
+                </section>
+
+                <section class="concept-page__connections" id="concept-page-connections" aria-label="Conexões">
+                    <header class="connections__header">
+                        <p class="connections__eyebrow">Tecendo a rede</p>
+                        <h2 class="connections__title">Conexões deste conceito</h2>
+                        <p class="connections__hint">Cada fio leva a outro conceito do mapa.</p>
+                    </header>
+                    <ul class="connections__list" id="concept-page-connections-list"></ul>
+                </section>
+
+                <section class="concept-page__bibliography" aria-label="Bibliografia">
+                    <header class="bibliography__header">
+                        <p class="bibliography__eyebrow">Fontes</p>
+                        <h2 class="bibliography__title">Bibliografia</h2>
+                    </header>
+                    <ol class="bibliography__list">
+                        <li class="bibliography__item">
+                            GRINBERG, L. P. Arquétipos e inconsciente coletivo. In: _________. <em>Jung: o homem criativo</em>. São Paulo: Blucher, 2017. p.&nbsp;167-214.
+                        </li>
+                        <li class="bibliography__item">
+                            JUNG, C. G. <em>O eu e o inconsciente</em>. Petrópolis&nbsp;-&nbsp;RJ, Vozes, 2014. (p.&nbsp;152-173).
+                        </li>
+                        <li class="bibliography__item">
+                            JUNG, C. G. <em>Os fundamentos da psicologia analítica</em>. Petrópolis&nbsp;-&nbsp;RJ, Vozes, 2017. (p.&nbsp;7-59).
+                        </li>
+                        <li class="bibliography__item">
+                            KUGLER, P. A criação de imagens na psique: uma ponte entre sujeito e objeto. In: YOUNG-EISENDRATH, P.; DAWSON, T. (edi.). <em>Compêndio da Cambridge sobre Jung</em>. São Paulo: Madras, 2011. (p.&nbsp;137-153).
+                        </li>
+                        <li class="bibliography__item">
+                            SALMAN, S. A psique criativa: as principais contribuições de Jung. In: YOUNG-EISENDRATH, P.; DAWSON, T. (edi.). <em>Compêndio da Cambridge sobre Jung</em>. São Paulo: Madras, 2011. (p.&nbsp;115-135).
+                        </li>
+                        <li class="bibliography__item">
+                            SILVEIRA, N. Das experiências de associações à descoberta dos complexos. In: _______ <em>Jung: vida e obra</em>. Rio de Janeiro: Paz e Terra, 2023. p.&nbsp;35-48.
+                        </li>
+                        <li class="bibliography__item">
+                            SILVEIRA, N. Energia psíquica e suas metamorfoses. In: _______ <em>Jung: vida e obra</em>. Rio de Janeiro: Paz e Terra, 2023. p.&nbsp;49-58.
+                        </li>
+                        <li class="bibliography__item">
+                            SILVEIRA, N. C. G. Jung: vida e obra. In: _______ <em>Jung: vida e obra</em>. Rio de Janeiro: Paz e Terra, 2023. p.&nbsp;17-34.
+                        </li>
+                    </ol>
+                </section>
+            </article>
+        </div>
+    </main>
+
+    <!-- ParticleJS -->
+    <script src="./public/library/particlejs/particles.js-master/particles.min.js"></script>
+
+    <script>
+        particlesJS.load(
+            'body',
+            './public/library/particlejs/particlesjs-config.json',
+            function () {
+                console.log('callback - particles.js config loaded');
+            }
+        );
+    </script>
+
+    <!-- D3 -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script src="./scripts.js"></script>
+</body>
+
+</html>
